@@ -21,13 +21,11 @@
         }
     }
 
-/*
     $calculator = new Calculator();
     echo $calculator->sum(5, 7). "\n";
     echo $calculator->subtract(8, 2). "\n";
     echo $calculator->multiply(2, 5). "\n";
     echo $calculator->divide(20, 4). "\n";
-*/
 
     echo "<br/>";
 

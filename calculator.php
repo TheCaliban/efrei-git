@@ -12,8 +12,7 @@
     }
     if(!isset($_GET['y']))
     {
-        echo 
-            "Missing argument for y !";
+        echo "Missing argument for y !";
         exit;
     }
 
