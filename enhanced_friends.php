@@ -54,9 +54,40 @@
         <meta charset="utf-8" />
         <title>Extended friends book</title>
         
+        <style>
+            
+            body
+            {
+                margin: 0;
+                padding: 0; 
+            }
+            
+            header
+            {
+                background-color: #666;
+                padding: 30px;
+                text-align: center;
+                font-size: 35px;
+                color: white;
+            }
+            
+            footer
+            {
+                background-color: #777;
+                padding: 10px;
+                text-align: center;
+                color: white;
+            }
+
+        
+        </style>
     </head>
     
     <body>
+        
+        <header>Header</header>
+        
+        <br/>
         
         <form action="" method="post">
             <label for="friends_name">Name: </label><input type="text" name="friends_name" id="friends_name" />
@@ -118,6 +149,11 @@
             <input type="submit" value="Filter List"/>
             <input type="checkbox" name="startingWith" <?php echo (isset($_POST['startingWith']) && $_POST['startingWith']) ? 'checked' : ''; ?> value="true">Only names starting with</input>
         </form>
+    
+        <br/>
+    
+        <footer>Footer</footer>
+    
     </body>
     
 </html>
