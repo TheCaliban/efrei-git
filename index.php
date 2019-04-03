@@ -1,84 +1,168 @@
 <?php
 
-    /* PARTIE ÉCRITURE DANS LE FICHIER friends.txt */
-
+    $arName = array();
     $filename = 'friends.txt';
+    $nameFilter = "";
 
-    if(isset($_POST['friends_name']))
+    /* Adding name into an array */
+
+    if(file_exists($filename))
     {
-        // appending to file
-        $file = fopen($filename, "a");
-        if(!empty(trim($_POST['friends_name'])))
+        $file = fopen($filename, "r");
+        
+        while(!feof($file))
         {
-            fwrite($file, htmlspecialchars($_POST['friends_name']). "\n");
+            $line = fgets($file);
+            if(!empty(trim($line)))
+            {
+                array_push($arName, $line);
+            }
         }
+        
         fclose($file);
     }
 
-?>
+    if(isset($_POST['friends_name']))
+    {
+        array_push($arName, strip_tags($_POST['friends_name']));
+    }
 
-<form action="" method="post">
-    <label for="friends_name">Name: </label><input type="text" name="friends_name" id="friends_name" />
-    <input type="submit" value="Add new friends" />
-</form>
+    if(isset($_POST['delete']))
+    {
+        unset($arName[intval($_POST['delete'])]);
+        $arName = array_values($arName);
+    }
 
-<h2>My Best Friends</h2>
 
-
-<form method="post">
-<ul>
-
-    <?php
-    
-        /* PARTIE POUR L'AFFICHAGE */
-
-        if(file_exists($filename))
+    $file = fopen($filename, "w");
+    if(!empty($arName))
+    {
+        foreach($arName as $name)
         {
-            $file = fopen( $filename, "r" );
-            $counter = 0;
-            
-            while (!feof($file))
-            {
-                $txt = fgets($file);
-                if(isset($_POST['nameFilter']) && !empty(trim($_POST['nameFilter'])))
-                {
-                    
-                    
-                    if(isset($_POST['startingWith']) && $_POST['startingWith'] === 'true')
-                    {
-
-                        if(substr($txt, 0, strlen($_POST['nameFilter'])) == $_POST['nameFilter'])
-                        {
-                            echo (strstr($txt, strip_tags($_POST['nameFilter']))) ? '<li>'.$txt. '<button type="submit" name="delete" value="'.$counter.'">Delete</button></li>' : '';
-//                            exit;
-                        }
-                    }
-                    else
-                    {
-                        echo (strstr($txt, strip_tags($_POST['nameFilter']))) ? '<li>'.$txt. '<button type="submit" name="delete" value="'.$counter.'">Delete</button></li>' : '';
-                    }
-                }
-                else
-                {
-                    echo (!empty(trim($txt))) ? '<li>'.$txt. '<button type="submit" name="delete" value="'.$counter.'">Delete</button></li>' : '';
-                    echo ''; 
-                }
-                
-                $counter++;
-                // reading file
-            }
-            fclose($file);
+            fwrite($file, $name. "\n");
         }
+    }
+    fclose($file);
 
-    ?>
     
-</ul>
-</form>
+
+?>
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8" />
+        <title>Extended friends book</title>
+        
+        <style>
+            
+            body
+            {
+                margin: 0;
+                padding: 0; 
+            }
+            
+            header
+            {
+                background-color: #666;
+                padding: 30px;
+                text-align: center;
+                font-size: 35px;
+                color: white;
+            }
+            
+            footer
+            {
+                background-color: #777;
+                padding: 10px;
+                text-align: center;
+                color: white;
+            }
+
+        
+        </style>
+    </head>
+    
+    <body>
+        
+        <div style="position: relative; height: 100%;">
+        
+            <header>Header</header>
+
+            <div>
+
+                <br/>
+
+                <form action="" method="post">
+                    <label for="friends_name">Name: </label><input type="text" name="friends_name" id="friends_name" />
+                    <input type="submit" value="Add new friends" />
+                </form>
+
+                <h2>My Best Friends</h2>
 
 
-<form action="" method="post">
+                <form method="post">
+                <ul>
 
-    <input type="text" name="nameFilter" id="nameFilter" value="<?php echo (isset($_POST['nameFilter'])) ? strip_tags($_POST['nameFilter']) : ''; ?>"/>
-    <input type="submit" value="Filter List"/>
-    <input type="checkbox" name="startingWith" <?php echo (isset($_POST['startingWith']) && $_POST['startingWith']) ? 'checked' : ''; ?> value="true">Only names starting with</input>
-</form>
+                    <?php
+
+                        /* PARTIE POUR L'AFFICHAGE */
+
+                        if(!empty($arName))
+                        {
+                            $counter = 0;
+
+                            foreach($arName as $name)
+                            {
+                                if(isset($_POST['nameFilter']) && !empty(trim($_POST['nameFilter'])))
+                                {
+
+                                    $nameFilter = $_POST['nameFilter'];
+
+                                    if(isset($_POST['startingWith']) && $_POST['startingWith'] === 'true')
+                                    {
+
+                                        if(substr($name, 0, strlen($nameFilter)) == $nameFilter)
+                                        {
+                                            echo (strstr($name, strip_tags($nameFilter))) ? '<li>'.$name. '<button type="submit" name="delete" value="'.$counter.'">Delete</button></li>' : '';
+                                        }
+                                    }
+                                    else
+                                    {
+                                        echo (strstr($name, strip_tags($nameFilter))) ? '<li>'.$name. '<button type="submit" name="delete" value="'.$counter.'">Delete</button></li>' : '';
+                                    }
+                                }
+                                else
+                                {
+                                    echo (!empty(trim($name))) ? '<li>'.$name. '<button type="submit" name="delete" value="'.$counter.'">Delete</button></li>' : '';
+                                }
+
+                                $counter++;
+                            }
+                        }
+
+                    ?>
+
+                </ul>
+                </form>
+
+
+                <form action="" method="post">
+
+                    <input type="text" name="nameFilter" id="nameFilter" value="<?php echo $nameFilter; ?>"/>
+                    <input type="submit" value="Filter List"/>
+                    <input type="checkbox" name="startingWith" <?php echo (isset($_POST['startingWith']) && $_POST['startingWith']) ? 'checked' : ''; ?> value="true">Only names starting with</input>
+                </form>
+
+                <br/>
+
+            </div>
+
+            <footer>Footer</footer>
+        
+        </div>
+    
+    
+    </body>
+    
+</html>
